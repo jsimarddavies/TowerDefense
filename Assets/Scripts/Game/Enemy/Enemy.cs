@@ -11,6 +11,10 @@ public class Enemy : MonoBehaviour
 
     private int wayPointIndex = 0;
 
+    void Start()
+    {
+        EnemyManager.Instance.RegisterEnemy(this);
+    }
     void OnGotToLastWayPoint()
     {
         Die();
@@ -22,8 +26,14 @@ public class Enemy : MonoBehaviour
 
         if (health <= 0)
         {
+            DropGold();
             Die();
         }
+    }
+
+    void DropGold()
+    {
+        GameManager.Instance.gold += goldDrop;
     }
 
 
@@ -31,9 +41,16 @@ public class Enemy : MonoBehaviour
     {
         if (gameObject != null)
         {
-            Destroy(gameObject);
+            EnemyManager.Instance.UnRegister(this);
+            //2
+            gameObject.AddComponent<AutoScaler>().scaleSpeed = -2;
+            //3
+            enabled = false;
+            //4
+            Destroy(gameObject, 0.3f);
         }
     }
+    
 
     void Update()
     {
@@ -44,7 +61,7 @@ public class Enemy : MonoBehaviour
             UpdateMovement();
         }
         else
-        { 
+        {
             OnGotToLastWayPoint();
         }
     }
